@@ -1,81 +1,82 @@
-let slider_item_active = "slider__item_active"
-let slider_dot_active = "slider__dot_active"
+let sliderItemActive = "slider__item_active"
+let sliderDotActive = "slider__dot_active"
+
+let sliderItem = "slider__item"
+let sliderDot = "slider__dot"
 
 
-function add_listener_slider(arrow, direction) {
-
-    arrow.addEventListener("click", function () {
-
-        let slider_items = document.body.getElementsByClassName("slider__item")
-        let slider_dots = document.body.getElementsByClassName("slider__dot")
-        if (direction === "prev") {
-            slider_items = Array.from(slider_items)
-            slider_dots = Array.from(slider_dots)
-            slider_items.reverse()
-            slider_dots.reverse()
-        }
-
-        for (let i = 0; i < slider_items.length; i++) {
-            let item = slider_items[i]
-            if (item.classList.contains(slider_item_active)){
-                refresh_arrow_or_dots(slider_items, i, slider_item_active)
-                refresh_arrow_or_dots(slider_dots, i, slider_dot_active)
-                break
-            }
-        }
-})
+function arrayOfClassItems(value) {
+    let sliderItemsHtmlColl = document.body.getElementsByClassName(value)
+    return Array.from(sliderItemsHtmlColl)
 }
 
-function add_listener_dots(dot) {
-
-    dot.addEventListener("click", function () {
-        let slider_items = document.body.getElementsByClassName("slider__item")
-        let slider_dots = document.body.getElementsByClassName("slider__dot")
-
-        for (let i = 0; i < slider_dots.length; i++) {
-            if (slider_dots[i].classList.contains(slider_dot_active)) {
-                slider_dots[i].classList.remove(slider_dot_active)
-                slider_items[i].classList.remove(slider_item_active)
-                break
-            }
-
-        }
-
-        dot.classList.add(slider_dot_active)
-        slider_dots = document.body.getElementsByClassName("slider__dot")
-        for (let i = 0; i < slider_dots.length; i++) {
-            if (slider_dots[i].classList.contains(slider_dot_active)) {
-                slider_items[i].classList.add(slider_item_active)
-            }
-        }
-    })
-
+function findActiveSlide(element) {
+    return element.classList.contains(sliderItemActive);
 }
 
-function refresh_arrow_or_dots(item, index, className) {
-    item[index].classList.remove(className)
-    if (index + 1 !== item.length) {
-        item[index + 1].classList.add(className)
-    } else {
-        item[0].classList.add(className)
+function findIndexOfActiveSlide (arrItems) {
+    return arrItems.findIndex(findActiveSlide)
+}
+
+function findIndexOfNextActiveSlide(arrItems, activeIndex) {
+    if (activeIndex + 1 >= arrItems.length) {
+        return 0
     }
+    return activeIndex + 1
+}
+
+function findIndexOfPreviousActiveSlide(arrItems, activeIndex) {
+    if (activeIndex - 1 < 0) {
+        return arrItems.length - 1
+    }
+    return activeIndex - 1
 }
 
 
-function main(){
-    let arrows = document.body.getElementsByClassName("slider__arrow")
+function deactivateSlide(element, selectedClass) {
+    element.classList.remove(selectedClass)
+}
+
+function activateSlide(element, selectedClass) {
+    element.classList.add(selectedClass)
+}
+
+function refreshBtn(selectedIndex) {
+    let slideItems = arrayOfClassItems(sliderItem)
+    let dotItems = arrayOfClassItems(sliderDot)
+    let currentIndex = findIndexOfActiveSlide(slideItems)
+
+    deactivateSlide(slideItems[currentIndex], sliderItemActive)
+    deactivateSlide(dotItems[currentIndex], sliderDotActive)
+
+    activateSlide(slideItems[selectedIndex], sliderItemActive)
+    activateSlide(dotItems[selectedIndex], sliderDotActive)
+}
+
+function arrow_btn(value) {
+    let slideItems = arrayOfClassItems(sliderItem)
+    let currentIndex = findIndexOfActiveSlide(slideItems)
+
+    let selectedIndex = 0
+    if (value === "next") {
+        selectedIndex = findIndexOfNextActiveSlide(slideItems, currentIndex)
+    } else if (value === "prev") {
+        selectedIndex = findIndexOfPreviousActiveSlide(slideItems, currentIndex)
+    }
+    refreshBtn(selectedIndex)
+}
+
+
+function main() {
+    document.body.getElementsByClassName("slider__arrow_next")[0].addEventListener("click", () => arrow_btn("next"))
+    document.body.getElementsByClassName("slider__arrow_prev")[0].addEventListener("click", () => arrow_btn("prev"))
     let dots = document.body.getElementsByClassName("slider__dot")
-
-    for (let dot of dots) {
-        add_listener_dots(dot)
-    }
-    for (let arrow of arrows) {
-        if (arrow.classList.contains("slider__arrow_next")) {
-            add_listener_slider(arrow)
-        } else {
-            add_listener_slider(arrow, "prev")
-        }
+    for (let i = 0; i < dots.length; i++) {
+        dots[i].addEventListener("click", function () {
+            refreshBtn(i)
+        })
     }
 }
 
 main()
+

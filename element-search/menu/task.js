@@ -1,7 +1,7 @@
-function get_nested_menu() {
-    let menu_link = document.body.querySelectorAll("li")
+function getNestedMenu() {
+    let menuLink = document.body.querySelectorAll("li")
     let res = []
-    Array.from(menu_link, (element) => {
+    Array.from(menuLink, (element) => {
         let child = element.querySelector("ul")
         if (child) {
             res.push(child)
@@ -10,32 +10,50 @@ function get_nested_menu() {
     return res
 }
 
-function disable_link(nested_menu) {
-    Array.from(nested_menu, (child) => {
-        let node_list = child.querySelectorAll("li")
-        Array.from(node_list, (element) => {
+function disableLink(nestedMenu) {
+    Array.from(nestedMenu, (child) => {
+        let nodeList = child.querySelectorAll("li")
+        Array.from(nodeList, (element) => {
             element.querySelector("a").onclick = () => {return false}
         })
     })
 }
 
-function add_event_listeners(nested_menu) {
-    Array.from(nested_menu, (child) => {
-        child.closest("li").querySelector("a").addEventListener("click", function (e) {
-            for (let value of nested_menu) {
+function addEventListener(nestedMenu) {
+
+    Array.from(nestedMenu, (child) => {
+        child.closest("li").querySelector("a").onclick = (e) =>  {
+            for (let value of nestedMenu) {
                 value.classList.remove("menu_active")
             }
             child.classList.add("menu_active")
-            e.preventDefault()
+            return false
+
+        }
+})}
+
+function addEventListenerOnWebPageClick(nestedMenu) {
+    Array.from(nestedMenu, (child) => {
+         child.closest("li").querySelector("a").classList.add("has_listener")
         })
+
+    document.addEventListener("click", function (e) {
+        if (e.target.classList.contains("has_listener")) {
+            return
+        }
+        for (let value of nestedMenu) {
+                value.classList.remove("menu_active")
+            }
+
     })
 }
 
-function start() {
-    let nested_menu = get_nested_menu()
-    disable_link(nested_menu)
-    add_event_listeners(nested_menu)
+function main() {
+    let nestedMenu = getNestedMenu()
+    // disableLink(nestedMenu)
+    addEventListener(nestedMenu)
+    addEventListenerOnWebPageClick(nestedMenu)
 }
 
-start()
+main()
 
