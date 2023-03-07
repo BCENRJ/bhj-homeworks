@@ -57,12 +57,9 @@ function arrow_btn(value) {
     let slideItems = arrayOfClassItems(sliderItem)
     let currentIndex = findIndexOfActiveSlide(slideItems)
 
-    let selectedIndex = 0
-    if (value === "next") {
-        selectedIndex = findIndexOfNextActiveSlide(slideItems, currentIndex)
-    } else if (value === "prev") {
-        selectedIndex = findIndexOfPreviousActiveSlide(slideItems, currentIndex)
-    }
+    let selectedIndex = (value === "next") ? findIndexOfNextActiveSlide(slideItems, currentIndex):
+        (value === "prev") ? findIndexOfPreviousActiveSlide(slideItems, currentIndex): 0
+
     refreshBtn(selectedIndex)
 }
 

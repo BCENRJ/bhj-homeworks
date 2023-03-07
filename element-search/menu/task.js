@@ -10,47 +10,39 @@ function getNestedMenu() {
     return res
 }
 
-function disableLink(nestedMenu) {
-    Array.from(nestedMenu, (child) => {
-        let nodeList = child.querySelectorAll("li")
-        Array.from(nodeList, (element) => {
-            element.querySelector("a").onclick = () => {return false}
-        })
-    })
+function checkChild(child){
+    if (!child.classList.contains("menu_active")) {
+        child.classList.add("menu_active")
+    } else {
+        child.classList.remove("menu_active")
+    }
 }
 
 function addEventListener(nestedMenu) {
-
     Array.from(nestedMenu, (child) => {
         child.closest("li").querySelector("a").onclick = (e) =>  {
             for (let value of nestedMenu) {
-                value.classList.remove("menu_active")
+                if (value === child) {
+                    checkChild(child)
+                } else {
+                    value.classList.remove("menu_active")
+                }
             }
-            child.classList.add("menu_active")
+            e.stopPropagation()
             return false
-
         }
 })}
 
 function addEventListenerOnWebPageClick(nestedMenu) {
-    Array.from(nestedMenu, (child) => {
-         child.closest("li").querySelector("a").classList.add("has_listener")
-        })
-
     document.addEventListener("click", function (e) {
-        if (e.target.classList.contains("has_listener")) {
-            return
-        }
         for (let value of nestedMenu) {
                 value.classList.remove("menu_active")
             }
-
     })
 }
 
 function main() {
     let nestedMenu = getNestedMenu()
-    // disableLink(nestedMenu)
     addEventListener(nestedMenu)
     addEventListenerOnWebPageClick(nestedMenu)
 }
